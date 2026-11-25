@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Your wishlist</h2>
+      <p>Keep your favorite items ready for later.</p>
+    </div>
+  </div>
+  {% if items %}
+  <div class="product-grid">
+    {% for item in items %}
+    <article class="product-card">
+      <img src="{{ item['image'] }}" alt="{{ item['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ item['title'] }}</h3>
+        <p>{{ item['description'] }}</p>
+        <div class="product-meta">
+          <span class="product-price">Rs {{ item['sale_price'] or item['price'] }}</span>
+          <button onclick="removeWishlistItem({{ item['wishlist_id'] }})" class="btn btn-secondary">Remove</button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Your wishlist is empty. Add products you love to keep them handy.</p>
+  {% endif %}
+</section>
+<script>
+async function removeWishlistItem(wishlistId) {
+  const response = await fetch('/api/remove_from_wishlist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ wishlist_id: wishlistId })
+  });
+  if (response.ok) {
+    window.location.reload();
+  }
+}
+</script>
+{% endblock %}

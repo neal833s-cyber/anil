@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Shop all products</h2>
+      <p>Search, filter, and browse the full collection of MeroBazaar products.</p>
+    </div>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to home</a>
+  </div>
+
+  <div class="search-card">
+    <form action="{{ url_for('products') }}" method="get">
+      <div class="form-grid" style="grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center;">
+        <input name="q" type="text" value="{{ search_query }}" class="search-field" placeholder="Search products, brands, styles..." />
+        <select name="category" style="border-radius: 999px;">
+          <option value="">All categories</option>
+          {% for category in categories %}
+          <option value="{{ category['id'] }}" {% if selected_category == category['id'] %}selected{% endif %}>{{ category['name'] }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Search</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section product-grid">
+  {% for product in products %}
+  <article class="product-card">
+    <img src="{{ product['image'] }}" alt="{{ product['title'] }}" />
+    <div class="product-card-body">
+      <h3>{{ product['title'] }}</h3>
+      <p class="product-rating">{{ product['rating'] }} ★ · {{ product['reviews'] }} reviews</p>
+      <p>{{ product['description'] }}</p>
+      <div class="product-meta">
+        <span class="product-price">Rs {{ product['sale_price'] or product['price'] }}</span>
+        <div>
+          <a class="btn btn-secondary" href="{{ url_for('product_detail', product_id=product['id']) }}">Details</a>
+        </div>
+      </div>
+    </div>
+  </article>
+  {% else %}
+  <p>No products match your search. Please try another search or category.</p>
+  {% endfor %}
+</section>
+{% endblock %}

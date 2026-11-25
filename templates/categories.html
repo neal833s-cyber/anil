@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>All categories</h2>
+      <p>Explore categories and find the ideal products for your needs.</p>
+    </div>
+  </div>
+  <div class="category-grid">
+    {% for category in categories %}
+    <article class="category-card">
+      <h3>{{ category['name'] }}</h3>
+      <p>{{ category['description'] }}</p>
+      <a class="btn btn-primary" href="{{ url_for('products') }}?category={{ category['id'] }}">Browse</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

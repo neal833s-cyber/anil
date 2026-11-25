@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>{{ product['title'] }}</h2>
+      <p>{{ product['category_name'] }} · Rating {{ product['rating'] }} ★</p>
+    </div>
+    <a href="{{ url_for('products') }}" class="btn btn-secondary">Back to products</a>
+  </div>
+  <div class="hero-grid" style="grid-template-columns: 1fr 0.9fr; gap: 2rem;">
+    <div class="product-card">
+      <img id="main-product-image" src="{{ product_images[0] }}" alt="{{ product['title'] }}" />
+      {% if product_images|length > 1 %}
+      <div class="image-gallery">
+        {% for image in product_images %}
+        <img class="thumb-image" src="{{ image }}" alt="{{ product['title'] }} thumbnail" onclick="document.getElementById('main-product-image').src = this.src" />
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="product-card">
+      <div class="product-card-body">
+        <h3>{{ product['title'] }}</h3>
+        <p>{{ product['description'] }}</p>
+        <div class="product-meta">
+          <span class="product-price">Rs {{ product['sale_price'] or product['price'] }}</span>
+          <span class="product-rating">{{ product['rating'] }} ★ · {{ product['reviews'] }} reviews</span>
+        </div>
+        <p>Stock: <strong>{{ product['inventory'] }}</strong></p>
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <button onclick="addToCart({{ product['id'] }})" class="btn btn-primary">Add to cart</button>
+          <button onclick="addToWishlist({{ product['id'] }})" class="btn btn-secondary">Add to wishlist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Customer reviews</h2>
+      <p>See what other shoppers are saying.</p>
+    </div>
+  </div>
+  <div class="review-grid">
+    {% for review in reviews %}
+    <article class="review-card">
+      <div class="review-author"><span>{{ review['user_name'] }}</span><strong>{{ review['rating'] }} ★</strong></div>
+      <p>{{ review['comment'] }}</p>
+      <small>{{ review['created_at'][:10] }}</small>
+    </article>
+    {% else %}
+    <p>No reviews yet. Be the first to share your thoughts.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Recommended products</h2>
+      <p>More items from the same category.</p>
+    </div>
+  </div>
+  <div class="product-grid">
+    {% for product in suggestions %}
+    <article class="product-card">
+      <img src="{{ product['image'] }}" alt="{{ product['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ product['title'] }}</h3>
+        <p class="product-price">Rs {{ product['sale_price'] or product['price'] }}</p>
+        <a class="btn btn-secondary" href="{{ url_for('product_detail', product_id=product['id']) }}">View</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

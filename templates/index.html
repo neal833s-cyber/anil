@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Homepage Ads Board Section -->
+<section class="section ads-section" style="padding-top: 1rem; padding-bottom: 0.5rem;">
+  <!-- Large Carousel Placement -->
+  <div id="hero-ads-carousel" class="ads-carousel-wrapper">
+    <div class="ad-skeleton"></div>
+  </div>
+  
+  <!-- Secondary Grid Placement -->
+  <div id="secondary-ads-wrapper" class="secondary-ads-wrapper" style="display: none;">
+    <div id="secondary-ads-grid" class="secondary-ads-grid"></div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <span class="info-pill">Trusted Nepali marketplace</span>
+      <h1>Discover the best deals across electronics, fashion, groceries, home appliances and more.</h1>
+      <p>Shop smart with MeroBazaar. Enjoy modern product discovery, fast checkout, trusted sellers, and payment options like eSewa, Khalti, or Cash on Delivery.</p>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h4>12k+</h4>
+          <p>Monthly shoppers</p>
+        </div>
+        <div class="stat-box">
+          <h4>5-star</h4>
+          <p>Seller rating</p>
+        </div>
+        <div class="stat-box">
+          <h4>24/7</h4>
+          <p>Support team</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80" alt="MeroBazaar hero shopping experience" />
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="search-card">
+    <form action="{{ url_for('products') }}" method="get">
+      <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search for electronics, fashion, groceries, books and more..." class="search-field" />
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Popular categories</h2>
+      <p>Shop by the categories our customers love.</p>
+    </div>
+    <a href="{{ url_for('categories') }}" class="btn btn-secondary">View all</a>
+  </div>
+  <div class="category-grid">
+    {% for category in categories %}
+    <article class="category-card">
+      <h3>{{ category['name'] }}</h3>
+      <p>{{ category['description'] }}</p>
+      <a class="btn btn-primary" href="{{ url_for('products') }}?category={{ category['id'] }}">Explore</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Featured products</h2>
+      <p>Handpicked items with premium reviews and top categories.</p>
+    </div>
+    <a href="{{ url_for('products') }}" class="btn btn-secondary">Shop featured</a>
+  </div>
+  <div class="product-grid">
+    {% for product in featured %}
+    <article class="product-card">
+      <img src="{{ product['image'] }}" alt="{{ product['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ product['title'] }}</h3>
+        <p class="product-rating">{{ product['rating'] }} ★ · {{ product['reviews'] }} reviews</p>
+        <div class="product-meta">
+          <span class="product-price"><span class="sale">Rs {{ product['sale_price'] or product['price'] }}</span></span>
+          <a class="btn btn-secondary" href="{{ url_for('product_detail', product_id=product['id']) }}">View</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Top sellers</h2>
+      <p>Shop the highest-rated items popular with Nepali shoppers.</p>
+    </div>
+    <a href="{{ url_for('products') }}" class="btn btn-secondary">Explore all</a>
+  </div>
+  <div class="product-grid">
+    {% for product in top_sellers %}
+    <article class="product-card">
+      <img src="{{ product['image'] }}" alt="{{ product['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ product['title'] }}</h3>
+        <p class="product-rating">{{ product['rating'] }} ★ · {{ product['reviews'] }} reviews</p>
+        <div class="product-meta">
+          <span class="product-price">Rs {{ product['sale_price'] or product['price'] }}</span>
+          <a class="btn btn-secondary" href="{{ url_for('product_detail', product_id=product['id']) }}">View</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section flash-banner">
+  <div class="flash-info">
+    <span class="info-pill">Flash sale</span>
+    <h3>Hot deals for today</h3>
+    <p>Save more on electronics, fashion and groceries with limited-time offers for MeroBazaar shoppers.</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">Shop sale</a>
+  </div>
+  <div class="flash-grid">
+    <article class="product-card">
+      <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80" alt="Flash sale item" />
+      <div class="product-card-body">
+        <h3>Smart kitchen blender</h3>
+        <p>Sale price Rs 1499</p>
+      </div>
+    </article>
+    <article class="product-card">
+      <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=900&q=80" alt="Flash sale item" />
+      <div class="product-card-body">
+        <h3>Designer watch</h3>
+        <p>Sale price Rs 2999</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>New arrivals</h2>
+      <p>Freshly added products to keep your shopping list exciting.</p>
+    </div>
+    <a href="{{ url_for('products') }}" class="btn btn-secondary">See all</a>
+  </div>
+  <div class="product-grid">
+    {% for product in new_arrivals %}
+    <article class="product-card">
+      <img src="{{ product['image'] }}" alt="{{ product['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ product['title'] }}</h3>
+        <p class="product-rating">{{ product['rating'] }} ★ · {{ product['reviews'] }} reviews</p>
+        <div class="product-meta">
+          <span class="product-price">Rs {{ product['sale_price'] or product['price'] }}</span>
+          <a class="btn btn-secondary" href="{{ url_for('product_detail', product_id=product['id']) }}">View</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Customer reviews</h2>
+      <p>Trusted ratings from shoppers across Nepal.</p>
+    </div>
+  </div>
+  <div class="review-grid">
+    <article class="review-card">
+      <div class="review-author"><span>Sushil</span><strong>5.0 ★</strong></div>
+      <p>Fast delivery and amazing product quality. MeroBazaar gave me the best shopping experience.</p>
+    </article>
+    <article class="review-card">
+      <div class="review-author"><span>Pragya</span><strong>4.9 ★</strong></div>
+      <p>Great support and easy checkout. I loved the eSewa payment option.</p>
+    </article>
+    <article class="review-card">
+      <div class="review-author"><span>Nabin</span><strong>4.8 ★</strong></div>
+      <p>The product arrived in perfect condition and the seller was responsive.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section newsletter">
+  <div class="section-header">
+    <div>
+      <h2>Stay in the loop</h2>
+      <p>Subscribe for exclusive offers, product drops, and early sale access.</p>
+    </div>
+  </div>
+  <form>
+    <input type="email" placeholder="Enter your email address" />
+    <button type="submit" class="btn btn-primary">Subscribe</button>
+  </form>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    loadAds();
+  });
+
+  async function loadAds() {
+    try {
+      // 1. Fetch Hero Ads
+      const heroResponse = await fetch('/api/ads?placement=homepage_hero');
+      const heroAds = await heroResponse.json();
+      renderHeroCarousel(heroAds);
+
+      // 2. Fetch Secondary Ads
+      const secondaryResponse = await fetch('/api/ads?placement=homepage_secondary');
+      const secondaryAds = await secondaryResponse.json();
+      renderSecondaryAds(secondaryAds);
+    } catch (e) {
+      console.error('Error loading advertisements:', e);
+      renderHeroCarousel([]); // Trigger fallback
+    }
+  }
+
+  let carouselInterval = null;
+  let currentSlide = 0;
+  let isHovered = false;
+
+  function renderHeroCarousel(ads) {
+    const container = document.getElementById('hero-ads-carousel');
+    if (!ads || ads.length === 0) {
+      container.innerHTML = `
+        <div class="fallback-ad-card">
+          <i data-lucide="sparkles" style="width: 48px; height: 48px; color: var(--primary);"></i>
+          <h3>Grow Your Business on MeroBazaar!</h3>
+          <p>Get featured in our premium homepage hero slideshow. Reach over 12k+ shoppers monthly. Launch your campaign in minutes from the seller dashboard.</p>
+          <a href="/seller/dashboard#ads" class="btn btn-primary" onclick="window.location.hash='ads'; window.location.reload();">Start Advertising Now</a>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    let slidesHtml = '';
+    let indicatorsHtml = '';
+
+    ads.forEach((ad, index) => {
+      let clickUrl = `/ad/click/${ad.id}`;
+      let ctaText = ad.cta_text || 'Shop Now';
+      
+      let mediaMarkup = '';
+      if (ad.ad_type === 'video' && ad.video_url) {
+        mediaMarkup = `<video class="ad-media" src="${ad.video_url}" autoplay loop muted playsinline loading="lazy"></video>`;
+      } else {
+        mediaMarkup = `<img class="ad-media" src="${ad.media_url || '/static/images/placeholder.jpg'}" alt="${ad.title}" loading="lazy" />`;
+      }
+
+      let priceMarkup = ad.price && ad.price > 0 ? `<div class="ad-price">Rs. ${ad.price}</div>` : '';
+      let badgeText = ad.priority > 1 ? 'Featured' : 'Sponsored';
+
+      slidesHtml += `
+        <div class="ad-slide" data-ad-id="${ad.id}">
+          <div class="ad-content">
+            <span class="ad-badge">${badgeText}</span>
+            <h2 class="ad-title">${ad.title}</h2>
+            <p class="ad-desc">${ad.description || ''}</p>
+            <div class="ad-meta">
+              ${priceMarkup}
+              <span class="ad-seller">By ${ad.seller_name || 'Verified Seller'}</span>
+            </div>
+            <a href="${clickUrl}" class="btn btn-primary" style="align-self: flex-start; margin-top: 1rem;">${ctaText}</a>
+          </div>
+          <div class="ad-media-container">
+            ${mediaMarkup}
+          </div>
+        </div>
+      `;
+
+      indicatorsHtml += `<button class="ad-indicator ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})" aria-label="Go to slide ${index + 1}"></button>`;
+    });
+
+    container.innerHTML = `
+      <div class="ads-carousel-inner" id="carousel-inner" style="transform: translateX(0%);">
+        ${slidesHtml}
+      </div>
+      ${ads.length > 1 ? `
+        <button class="ad-control prev" onclick="prevSlide()" aria-label="Previous Slide"><i data-lucide="chevron-left"></i></button>
+        <button class="ad-control next" onclick="nextSlide()" aria-label="Next Slide"><i data-lucide="chevron-right"></i></button>
+        <div class="ad-indicators">
+          ${indicatorsHtml}
+        </div>
+      ` : ''}
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+
+    // Setup Event Listeners
+    container.addEventListener('mouseenter', () => { isHovered = true; });
+    container.addEventListener('mouseleave', () => { isHovered = false; });
+
+    // Track initial impression
+    trackImpression(ads[0].id);
+
+    // Setup autoplay
+    if (ads.length > 1) {
+      currentSlide = 0;
+      startCarouselTimer(ads);
+    }
+  }
+
+  function startCarouselTimer(ads) {
+    if (carouselInterval) clearInterval(carouselInterval);
+    carouselInterval = setInterval(() => {
+      if (!isHovered) {
+        nextSlide(ads);
+      }
+    }, 5000);
+  }
+
+  function updateCarousel() {
+    const inner = document.getElementById('carousel-inner');
+    if (!inner) return;
+    inner.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+    const indicators = document.querySelectorAll('.ad-indicator');
+    indicators.forEach((ind, index) => {
+      if (index === currentSlide) {
+        ind.classList.add('active');
+      } else {
+        ind.classList.remove('active');
+      }
+    });
+
+    const slides = document.querySelectorAll('.ad-slide');
+    if (slides[currentSlide]) {
+      const adId = slides[currentSlide].getAttribute('data-ad-id');
+      if (adId) trackImpression(adId);
+    }
+  }
+
+  function nextSlide(ads = null) {
+    const slides = document.querySelectorAll('.ad-slide');
+    if (slides.length <= 1) return;
+    currentSlide = (currentSlide + 1) % slides.length;
+    updateCarousel();
+  }
+
+  function prevSlide() {
+    const slides = document.querySelectorAll('.ad-slide');
+    if (slides.length <= 1) return;
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    updateCarousel();
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateCarousel();
+  }
+
+  function trackImpression(adId) {
+    const sessionKey = `ad_imp_${adId}`;
+    if (sessionStorage.getItem(sessionKey)) return;
+
+    sessionStorage.setItem(sessionKey, '1');
+    fetch(`/api/ads/${adId}/impression`, { method: 'POST' })
+      .catch(err => console.error('Failed to track ad impression:', err));
+  }
+
+  function renderSecondaryAds(ads) {
+    const wrapper = document.getElementById('secondary-ads-wrapper');
+    const grid = document.getElementById('secondary-ads-grid');
+
+    if (!ads || ads.length === 0) {
+      wrapper.style.display = 'none';
+      return;
+    }
+
+    wrapper.style.display = 'block';
+    let adsHtml = '';
+
+    ads.slice(0, 3).forEach(ad => {
+      let clickUrl = `/ad/click/${ad.id}`;
+      let ctaText = ad.cta_text || 'View Offer';
+      let priceMarkup = ad.price && ad.price > 0 ? `<span class="secondary-ad-price">Rs. ${ad.price}</span>` : '<span></span>';
+      let imgUrl = ad.media_url || '/static/images/placeholder.jpg';
+      let badgeText = ad.priority > 1 ? 'Featured' : 'Sponsored';
+
+      adsHtml += `
+        <article class="secondary-ad-card">
+          <span class="secondary-ad-badge">${badgeText}</span>
+          <div class="secondary-ad-image-container">
+            <img class="secondary-ad-image" src="${imgUrl}" alt="${ad.title}" loading="lazy" />
+          </div>
+          <div class="secondary-ad-body">
+            <h3 class="secondary-ad-title">${ad.title}</h3>
+            <p class="secondary-ad-desc">${ad.description || ''}</p>
+            <div class="secondary-ad-meta">
+              ${priceMarkup}
+              <a href="${clickUrl}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 999px;">${ctaText}</a>
+            </div>
+          </div>
+        </article>
+      `;
+      trackImpression(ad.id);
+    });
+
+    grid.innerHTML = adsHtml;
+    if (window.lucide) window.lucide.createIcons();
+  }
+</script>
+{% endblock %}

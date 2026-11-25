@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar">
+    <ul class="sidebar-menu">
+      <li class="sidebar-item active" data-tab="overview">
+        <a href="#overview">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="sidebar-item" data-tab="orders">
+        <a href="#orders">
+          <i data-lucide="shopping-bag"></i>
+          <span>My Orders</span>
+        </a>
+      </li>
+      <li class="sidebar-item" data-tab="wishlist">
+        <a href="#wishlist">
+          <i data-lucide="heart"></i>
+          <span>Wishlist</span>
+        </a>
+      </li>
+      <li class="sidebar-item" data-tab="chat">
+        <a href="#chat">
+          <i data-lucide="message-square"></i>
+          <span>Messages</span>
+          <span class="sidebar-badge" style="display:none;" id="unread-count">New</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="{{ url_for('logout') }}">
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+    
+    <div style="padding: 1rem; border-top: 1px solid var(--db-border);">
+      <p style="font-size: 0.75rem; color: var(--db-muted); margin: 0;">Logged in as:</p>
+      <p style="font-size: 0.85rem; font-weight: 600; margin: 0.25rem 0 0 0;">{{ user['name'] }}</p>
+    </div>
+  </aside>
+
+  <!-- Content Area -->
+  <main class="dashboard-content">
+    <!-- TAB 1: OVERVIEW -->
+    <div class="tab-content" id="tab-overview">
+      <div class="dashboard-header">
+        <div>
+          <h1>Hello, {{ user['name'].split(' ')[0] }}! 👋</h1>
+          <p>Welcome back to MeroBazaar. Here's your shopping overview.</p>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="dashboard-grid">
+        <div class="metric-card">
+          <div class="metric-icon blue">
+            <i data-lucide="shopping-bag"></i>
+          </div>
+          <div class="metric-info">
+            <h3>Total Orders</h3>
+            <p class="metric-value">{{ orders_count }}</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon red">
+            <i data-lucide="heart"></i>
+          </div>
+          <div class="metric-info">
+            <h3>Wishlist Items</h3>
+            <p class="metric-value">{{ wishlist_count }}</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon purple">
+            <i data-lucide="map-pin"></i>
+          </div>
+          <div class="metric-info">
+            <h3>Saved Addresses</h3>
+            <p class="metric-value">{{ addresses_count }}</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon green">
+            <i data-lucide="credit-card"></i>
+          </div>
+          <div class="metric-info">
+            <h3>Wallet Balance</h3>
+            <p class="metric-value">Rs. {{ "{:,.2f}".format(wallet_balance) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders & Wishlist Grid -->
+      <div class="dashboard-row">
+        <!-- Recent Orders -->
+        <div class="db-card">
+          <div class="db-card-header">
+            <h2>Recent Orders</h2>
+            <a href="#orders" onclick="switchTab('orders')">View All</a>
+          </div>
+          {% if recent_orders %}
+          <div style="overflow-x: auto;">
+            <table class="db-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                  <td><strong>#{{ order['id'] }}</strong></td>
+                  <td>{{ order['created_at'][:10] }}</td>
+                  <td>Rs. {{ "{:,.2f}".format(order['total']) }}</td>
+                  <td>
+                    <span class="status-badge {{ order['status'].lower() }}">
+                      {{ order['status'] }}
+                    </span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p style="color: var(--db-muted); text-align: center; padding: 2rem 0;">You haven't placed any orders yet.</p>
+          {% endif %}
+        </div>
+
+        <!-- Wishlist Panel -->
+        <div class="db-card">
+          <div class="db-card-header">
+            <h2>Your Wishlist</h2>
+            <a href="#wishlist" onclick="switchTab('wishlist')">Manage</a>
+          </div>
+          {% if wishlist_items %}
+          <div class="user-avatar-list">
+            {% for item in wishlist_items %}
+            <div class="user-avatar-item" style="justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <img src="{{ item['image'] }}" alt="{{ item['title'] }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;" />
+                <div class="user-avatar-info">
+                  <p class="user-name" style="max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item['title'] }}</p>
+                  <p class="user-subtext">Rs. {{ "{:,.2f}".format(item['price']) }}</p>
+                </div>
+              </div>
+              <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="addToCart({{ item['id'] }})">
+                <i data-lucide="shopping-cart" style="width:12px; height:12px;"></i> Add
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p style="color: var(--db-muted); text-align: center; padding: 2rem 0;">Wishlist is empty.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Recommended for You -->
+      <div class="db-card">
+        <div class="db-card-header">
+          <h2>Recommended for You</h2>
+        </div>
+        <div class="product-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+          {% for product in recommended_products %}
+          <div class="product-card" style="border: 1px solid var(--db-border); border-radius: 12px; padding: 0.75rem;">
+            <a href="/product/{{ product['id'] }}">
+              <img src="{{ product['image'] }}" alt="{{ product['title'] }}" style="border-radius: 8px; width:100%; height:130px; object-fit: cover; margin-bottom: 0.5rem;" />
+            </a>
+            <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ product['title'] }}</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight: 700; font-size: 0.95rem; color: var(--primary);">Rs. {{ product['price'] }}</span>
+              <span style="font-size:0.75rem; color: #eab308; display:flex; align-items:center; gap:0.1rem;">
+                <i data-lucide="star" style="width:12px; height:12px; fill:#eab308;"></i> {{ product['rating'] }}
+              </span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: MY ORDERS -->
+    <div class="tab-content" id="tab-orders" style="display: none;">
+      <div class="db-card">
+        <div class="db-card-header">
+          <h2>My Order History</h2>
+        </div>
+        {% if recent_orders %}
+        <div style="overflow-x: auto;">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Tracking Code</th>
+                <th>Payment Method</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+              <tr>
+                <td><strong>#{{ order['id'] }}</strong></td>
+                <td><code style="background: rgba(0,0,0,0.04); padding: 0.2rem 0.4rem; border-radius: 4px;">{{ order['tracking_code'] }}</code></td>
+                <td>{{ order['payment_method'] }}</td>
+                <td>Rs. {{ "{:,.2f}".format(order['total']) }}</td>
+                <td>
+                  <span class="status-badge {{ order['status'].lower() }}">
+                    {{ order['status'] }}
+                  </span>
+                </td>
+                <td>
+                  <a href="/order-tracking/{{ order['tracking_code'] }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">
+                    Track
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p style="color: var(--db-muted); text-align: center; padding: 2rem 0;">You have not placed any orders yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- TAB 3: WISHLIST -->
+    <div class="tab-content" id="tab-wishlist" style="display: none;">
+      <div class="db-card">
+        <div class="db-card-header">
+          <h2>Manage Wishlist</h2>
+        </div>
+        {% if wishlist_items %}
+        <div class="product-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;">
+          {% for item in wishlist_items %}
+          <div class="product-card" style="border: 1px solid var(--db-border); border-radius: 12px;">
+            <img src="{{ item['image'] }}" alt="{{ item['title'] }}" style="width: 100%; height: 160px; object-fit: cover; border-top-left-radius:12px; border-top-right-radius:12px;" />
+            <div style="padding: 1rem;">
+              <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem;">{{ item['title'] }}</h4>
+              <p style="font-weight: 700; color: var(--primary); margin: 0 0 1rem 0;">Rs. {{ "{:,.2f}".format(item['price']) }}</p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary" style="flex-grow:1; padding: 0.5rem; font-size: 0.8rem;" onclick="addToCart({{ item['id'] }})">
+                  Add to Cart
+                </button>
+                <form action="/api/remove_from_wishlist" method="POST" class="remove-wishlist-form" style="display:inline;">
+                  <button type="button" class="btn btn-secondary" style="padding: 0.5rem;" onclick="removeWishlistItem({{ item['wishlist_id'] }}, this)">
+                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--db-muted); text-align: center; padding: 3rem 0;">Your wishlist is empty.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- TAB 4: CHAT -->
+    <div class="tab-content" id="tab-chat" style="display: none;">
+      <div class="db-card" style="padding: 0;">
+        <div class="chat-container">
+          <!-- Chat Sidebar -->
+          <div class="chat-sidebar">
+            <div class="chat-sidebar-header">
+              Sellers / Stores
+            </div>
+            <div class="chat-list">
+              {% for seller in sellers %}
+              <div class="chat-user-item {% if loop.first %}active{% endif %}" data-user-id="{{ seller['id'] }}" onclick="selectChat({{ seller['id'] }}, '{{ seller['name'] }}', this)">
+                <div class="chat-user-avatar">
+                  {{ seller['name'][0] }}
+                </div>
+                <div class="chat-user-info">
+                  <p class="chat-user-name">{{ seller['name'] }}</p>
+                  <p class="chat-user-status online">Online</p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Chat Window -->
+          <div class="chat-window">
+            <div class="chat-header">
+              <div class="chat-user-avatar" id="active-chat-avatar">
+                S
+              </div>
+              <div>
+                <h3 style="margin: 0; font-size: 0.95rem;" id="active-chat-name">Select Seller</h3>
+                <span class="chat-user-status online" style="font-size: 0.75rem;">Online</span>
+              </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages-container">
+              <!-- Messages load dynamically -->
+            </div>
+
+            <div class="chat-input-area">
+              <input type="text" class="chat-input" id="chat-input-field" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendChatMessage()" />
+              <button class="chat-send-btn" onclick="sendChatMessage()">
+                <i data-lucide="send" style="width:16px; height:16px; color:white;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let activeRecipientId = null;
+
+  function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    // Remove active class from sidebar
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+    
+    // Show selected tab content
+    const selectedContent = document.getElementById('tab-' + tabName);
+    if (selectedContent) selectedContent.style.display = 'block';
+    
+    // Set active sidebar item
+    const selectedItem = document.querySelector(`[data-tab="${tabName}"]`);
+    if (selectedItem) selectedItem.classList.add('active');
+    
+    // If chat tab is selected, initialize chat
+    if (tabName === 'chat') {
+      const firstChat = document.querySelector('.chat-user-item');
+      if (firstChat) {
+        firstChat.click();
+      }
+    }
+  }
+
+  // Handle sidebar navigation clicks
+  document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const tab = this.getAttribute('data-tab');
+      if (tab) {
+        e.preventDefault();
+        switchTab(tab);
+      }
+    });
+  });
+
+  async function removeWishlistItem(wishlistId, buttonEl) {
+    if (!confirm('Remove this product from wishlist?')) return;
+    try {
+      const response = await fetch('/api/remove_from_wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wishlist_id: wishlistId })
+      });
+      const res = await response.json();
+      if (res.success) {
+        // Refresh page or remove card
+        buttonEl.closest('.product-card').remove();
+        updateBadge('#wishlist-count', res.count);
+      } else {
+        alert('Could not remove item.');
+      }
+    } catch(err) {
+      alert('Error connecting to server.');
+    }
+  }
+
+  async function selectChat(recipientId, recipientName, element) {
+    activeRecipientId = recipientId;
+    document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    
+    document.getElementById('active-chat-name').textContent = recipientName;
+    document.getElementById('active-chat-avatar').textContent = recipientName[0];
+    
+    await loadChatHistory(recipientId);
+  }
+
+  async function loadChatHistory(recipientId) {
+    const container = document.getElementById('chat-messages-container');
+    container.innerHTML = '<p style="text-align:center;color:var(--db-muted);padding:1rem;">Loading conversation...</p>';
+    try {
+      const response = await fetch(`/api/chat/history?user_id=${recipientId}`);
+      const messages = await response.json();
+      container.innerHTML = '';
+      
+      if (messages.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--db-muted);padding:2rem;">Start a conversation with this store!</p>';
+        return;
+      }
+      
+      messages.forEach(msg => {
+        const isSentByMe = msg.sender_id !== recipientId;
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${isSentByMe ? 'sent' : 'received'}`;
+        
+        const text = document.createElement('div');
+        text.textContent = msg.message;
+        bubble.appendChild(text);
+        
+        const time = document.createElement('div');
+        time.className = 'chat-time';
+        // format ISO date briefly
+        const dateObj = new Date(msg.created_at);
+        time.textContent = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        bubble.appendChild(time);
+        
+        container.appendChild(bubble);
+      });
+      
+      // scroll to bottom
+      container.scrollTop = container.scrollHeight;
+    } catch(err) {
+      container.innerHTML = '<p style="text-align:center;color:var(--db-accent-red);padding:1rem;">Error loading messages.</p>';
+    }
+  }
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chat-input-field');
+    const msgText = input.value.trim();
+    if (!msgText || !activeRecipientId) return;
+    
+    input.value = '';
+    try {
+      const response = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receiver_id: activeRecipientId, message: msgText })
+      });
+      const res = await response.json();
+      if (res.success) {
+        // Reload chat history
+        await loadChatHistory(activeRecipientId);
+      } else {
+        alert('Could not send message.');
+      }
+    } catch(err) {
+      alert('Error sending message.');
+    }
+  }
+
+  // Handle initial tab display if hash is present
+  document.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.substring(1);
+    if (hash && ['overview', 'orders', 'wishlist', 'chat'].includes(hash)) {
+      switchTab(hash);
+    } else {
+      switchTab('overview');
+    }
+  });
+</script>
+{% endblock %}

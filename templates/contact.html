@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Contact us</h2>
+      <p>Our support team is here to help with orders, returns, and seller inquiries.</p>
+    </div>
+  </div>
+  <div class="hero-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div class="product-card">
+      <h3>Customer support</h3>
+      <p>Email: support@merobazaar.com</p>
+      <p>Phone: +977 980-000-0000</p>
+      <p>Office: Kathmandu, Nepal</p>
+    </div>
+    <div class="product-card">
+      <form id="contact-form" class="form-grid">
+        <div class="form-group">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" type="text" placeholder="Your full name" required />
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Email</label>
+          <input id="contact-email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" placeholder="How can we help?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send message</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

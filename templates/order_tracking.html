@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Track order {{ order['tracking_code'] }}</h2>
+      <p>Current status: {{ order['status'] }}</p>
+    </div>
+    <a href="{{ url_for('order_history') }}" class="btn btn-secondary">Back to orders</a>
+  </div>
+  <div class="product-card">
+    <div class="product-card-body">
+      <p><strong>Order placed:</strong> {{ order['created_at'][:10] }}</p>
+      <p><strong>Payment method:</strong> {{ order['payment_method'] }}</p>
+      <p><strong>Shipping address:</strong> {{ order['address'] }}</p>
+      <p><strong>Order total:</strong> Rs {{ order['total'] | round(2) }}</p>
+      <p><strong>Status:</strong> {{ order['status'] }}</p>
+      <div class="review-card">
+        <p>Estimated delivery: within 2-5 business days.</p>
+        <p>Use the tracking code above to stay updated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

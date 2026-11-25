@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Your cart</h2>
+      <p>Review your selected items before checkout.</p>
+    </div>
+  </div>
+  {% if items %}
+  <div class="product-grid">
+    {% for item in items %}
+    <article class="product-card">
+      <img src="{{ item['image'] }}" alt="{{ item['title'] }}" />
+      <div class="product-card-body">
+        <h3>{{ item['title'] }}</h3>
+        <p>{{ item['description'] }}</p>
+        <p>Quantity: {{ item['quantity'] }}</p>
+        <div class="product-meta">
+          <span class="product-price">Rs {{ item['price'] * item['quantity'] | round(2) }}</span>
+          <button onclick="removeCartItem({{ item['cart_id'] }})" class="btn btn-secondary">Remove</button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="section-header" style="margin-top: 1.5rem;">
+    <div>
+      <h3>Order summary</h3>
+      <p>Subtotal: Rs {{ subtotal | round(2) }}</p>
+      <p>Shipping: Rs 9.99</p>
+      <p><strong>Total: Rs {{ (subtotal + 9.99) | round(2) }}</strong></p>
+    </div>
+    <a href="{{ url_for('checkout') }}" class="btn btn-primary">Proceed to checkout</a>
+  </div>
+  {% else %}
+  <p>Your cart is empty. Start shopping to add products to your cart.</p>
+  {% endif %}
+</section>
+<script>
+async function removeCartItem(cartId) {
+  const response = await fetch('/api/remove_from_cart', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cart_id: cartId })
+  });
+  if (response.ok) {
+    window.location.reload();
+  }
+}
+</script>
+{% endblock %}

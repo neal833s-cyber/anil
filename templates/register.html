@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2>Create account</h2>
+      <p>Join MeroBazaar and start buying, saving, and tracking orders today.</p>
+    </div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-panel">
+      <h3>Sign up</h3>
+      <p>It only takes a minute to create your account.</p>
+      <form method="post" class="form-grid">
+        <div class="form-group">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" required placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required placeholder="Create a password" />
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+    </div>
+    <div class="auth-panel auth-panel-accent">
+      <h3>Why join?</h3>
+      <p>Track your orders, save your wishlist, and enjoy faster checkout every time.</p>
+      <a href="{{ url_for('login') }}" class="btn btn-secondary">Already have an account?</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
